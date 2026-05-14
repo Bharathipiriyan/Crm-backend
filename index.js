@@ -6,8 +6,13 @@ const jwt = require("jsonwebtoken")
 
 const app = express()
 
+app.use(cors({
+    origin: "https://crm-frontend-six-ashen.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+}));
 
-app.use(cors())
+
 app.use(express.json())
 
 
@@ -38,18 +43,21 @@ const Lead = mongoose.model("Lead", {
 
 
 
-function checkLogin(req, res, next) {
-    let token = req.headers.authorization
+function check(req, res, next) {
 
-    if (!token) {
+    let header = req.headers.authorization
+
+    if (!header) {
         return res.status(401).json({ message: "No Token" })
     }
 
+    let token = header.split(" ")[1]
+
     try {
-        let data = jwt.verify(token, secretKey)
-        req.userId = data.id
+        let decoded = jwt.verify(token, secretKey)
+        req.userId = decoded.id
         next()
-    } catch (err) {
+    } catch {
         return res.status(401).json({ message: "Invalid Token" })
     }
 }
