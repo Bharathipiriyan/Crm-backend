@@ -4,7 +4,7 @@ const cors = require("cors")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 
-const app = express();
+const app = express()
 
 app.use(cors({
     origin: "https://crm-frontend-six-ashen.vercel.app",
@@ -39,9 +39,7 @@ const Lead = mongoose.model("Lead", {
 
 
 function check(req, res, next) {
-
     const header = req.headers.authorization
-
     console.log("AUTH HEADER:", header)
 
     if (!header || !header.startsWith("Bearer ")) {
@@ -51,20 +49,19 @@ function check(req, res, next) {
     const token = header.split(" ")[1]
 
     try {
-        const decoded = jwt.verify(token, secretKey);
+    const decoded = jwt.verify(token, secretKey);
         req.userId = decoded.id
         next()
 
     } catch (err) {
-        console.log("JWT ERROR:", err.message)
-        return res.status(401).json({ message: "Invalid Token" })
+    console.log("JWT ERROR:", err.message)
+    return res.status(401).json({ message: "Invalid Token" })
     }
 }
 
 
 app.post("/register", async (req, res) => {
     let { email, password } = req.body
-
     let user = await User.findOne({ email })
 
     if (user) {
@@ -72,16 +69,12 @@ app.post("/register", async (req, res) => {
     }
 
     let hash = await bcrypt.hash(password, 10)
-
     await User.create({ email, password: hash })
-
     res.json({ message: "Registered Successfully" })
-});
+})
 
 app.post("/login", async (req, res) => {
-
     let { email, password } = req.body
-
     let user = await User.findOne({ email })
 
     if (!user) {
